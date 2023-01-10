@@ -1,0 +1,2 @@
+# GenReads
+Generate Fake Reads
