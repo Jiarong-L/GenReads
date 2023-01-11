@@ -1,0 +1,4 @@
+SampleID	Amount	RawFasta
+Spe1	1X	raw/GCF_002871005.1_ASM287100v1_genomic.fna
+Spe2	50M	raw/GCF_007829915.1_ASM782991v1_genomic.fna
+Spe3	2X	raw/GCF_009687845.1_ASM968784v1_genomic.fna

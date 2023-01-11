@@ -1,4 +1,5 @@
 import gzip
+import os
 
 
 
@@ -31,7 +32,7 @@ class GenomeFastaReadHandler(object):
                 line = self.nextLine()
                 if (len(line)>0):
                     if line[0] == '>':
-                        self.nextContigHeader = line
+                        self.nextContigHeader = line[1:]
                         break
 
     def hasNextContig(self):
@@ -50,48 +51,38 @@ class GenomeFastaReadHandler(object):
             line = self.nextLine()
             if (len(line)>0):
                 if line[0] == '>':
-                    self.nextContigHeader = line
+                    self.nextContigHeader = line[1:]
                     break 
                 else:
                     ContigStr += line
         return ContigHeader,ContigStr.upper()
 
-    # def scanSize(self):
-    #     size_counter = 0
-    #     while self.has_NextLine:
-    #         line = self.nextLine()
-    #         if (len(line)>0):
-    #             if line[0] == '>':
-    #                 pass
-    #             else:
-    #                 size_counter += len(line)
-    #     return size_counter
 
 
 
+class WriterHandler(object):
+    def __init__(self, file_dir):  
+        self.file_dir = file_dir.strip()
+        if os.path.exists(self.file_dir):      ## clean target file while init WriterHandler
+            os.remove(self.file_dir)        
+        if file_dir[-3:] == '.gz':        ## write to fa or gz file according to file suffix
+            self.is_gzip = True
+            self.fw = gzip.open(self.file_dir,'wb')
+        else:
+            self.is_gzip = False
+            self.fw = open(self.file_dir,'w')
 
-def Scan_GenomeSize(file_dir):
-    size_counter = 0
-    f = GenomeFastaReadHandler(file_dir)
-    while f.hasNextContig():
-        _,ContigStr = f.nextContig()
-        size_counter += len(ContigStr)
-    return size_counter
-
-
-
-def Link_Contigs(file_dir,gapSize,gapfiller='N'): ## gapSize = merged_read_len-1     ## oldname: load_Genome
-    gap_seq = gapfiller*gapSize
-    linked_Genomes = ''
-    f = GenomeFastaReadHandler(file_dir)
-    while f.hasNextContig():
-        _,ContigStr = f.nextContig()
-        if linked_Genomes != '':
-            linked_Genomes += gap_seq
-        linked_Genomes += ContigStr
-    return linked_Genomes
-
-
+    def write_fq(self,header,seq,qualityline):
+        fq_str = '@{}\n{}\n+\n{}\n'.format(header,seq,qualityline)
+        if self.is_gzip:
+            fq_str = fq_str.encode('utf-8')
+        self.fw.write(fq_str)
+        
+    def write_fa(self,header,seq):
+        fa_str = '>{}\n{}\n'.format(header,seq)
+        if self.is_gzip:
+            fa_str = fa_str.encode('utf-8')
+        self.fw.write(fa_str)
 
 
 
