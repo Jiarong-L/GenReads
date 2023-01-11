@@ -5,15 +5,18 @@ import numpy as np
 degenerate_dict = Gen_degenerate_dict()
 
 
+def blast():  ## TODO
+    pass
 
-def bio_hamming(seq1,seq2,degenerate_dict,allow_unequal_tail = True,ignore_case=True):  
+
+
+
+
+def bio_hamming(seq1,seq2,degenerate_dict,allow_unequal_tail = True):  
     max_seq_len = max(len(seq1),len(seq2))
     min_seq_len = min(len(seq1),len(seq2))
     if not allow_unequal_tail:
         assert max_seq_len == min_seq_len
-    # if ignore_case:
-    #     seq1 = seq1.upper()
-    #     seq2 = seq2.upper()
     distance = 0
     for i in range(min_seq_len):
         if len(set(degenerate_dict[seq1[i]]).intersection(degenerate_dict[seq2[i]])) == 0:
