@@ -48,7 +48,7 @@ def load_several_input(cfg_dict):
     assert 'RawFasta' in set(input_cfg.columns)
     input_cfg['ContigSizeList'] = input_cfg.apply(lambda x: Scan_GenomeSize(x['RawFasta']), axis = 1)
     input_cfg['bases'] = input_cfg.apply(lambda x: convert_Size_Symbol(x['Amount'],x['ContigSizeList'],insert_size), axis = 1)
-    input_cfg['reads'] = input_cfg['bases'].apply(lambda x: math.ceil(x/insert_size))
+    input_cfg['frags'] = input_cfg['bases'].apply(lambda x: math.ceil(x/insert_size))
     return input_cfg.T.to_dict()
 
 
@@ -59,7 +59,7 @@ def load_single_input(cfg_dict):
     sample_dict['RawFasta'] = cfg_dict['input_RawFasta'.lower()]
     sample_dict['ContigSizeList'] = Scan_GenomeSize(sample_dict['RawFasta'])
     sample_dict['bases'] = convert_Size_Symbol(sample_dict['Amount'],sample_dict['ContigSizeList'],insert_size)
-    sample_dict['reads'] = math.ceil(sample_dict['bases']/insert_size)
+    sample_dict['frags'] = math.ceil(sample_dict['bases']/insert_size)
     input_cfg_dict = {cfg_dict['input_SampleID'.lower()]:sample_dict}
     return input_cfg_dict
 

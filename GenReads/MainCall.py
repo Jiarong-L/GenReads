@@ -19,7 +19,7 @@ def MainCall(cfg_file):
             ContigSeq = Link_Contigs(file_dir,gapSize,gapfiller='N')
             CallGenerators(ContigSeq,cfg_dict,sample_dict,sid,'',fa_w,r1_w,r2_w)
         else:
-            # sample_dict['1X_bases'] = 1  ## TODO
+            # sample_dict['1X_bases'] = 1  ## TODO   
             fh  = GenomeFastaReadHandler(file_dir)
             while fh.hasNextContig():
                 ContigHeader,ContigSeq = fh.nextContig()

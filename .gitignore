@@ -2,3 +2,4 @@ raw/*
 oldcode/*
 output/*
 */__pycache__/*
+test.py

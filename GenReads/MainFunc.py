@@ -30,13 +30,13 @@ def Link_Contigs(file_dir,gapSize,gapfiller='N'): ## gapSize = insert_size-1    
 
 
 
-def extract_amplicon(ContigSeq,Primer_F,Primer_R_tr,degenerate_dict,insert_size,insert_size_max,insert_size_min,size_punish,F_treash,R_treash):
+def extract_amplicon(ContigSeq,Primer_F,Primer_R_tr,degenerate_dict,insert_size,insert_size_max,insert_size_min,size_punish,f_treash,r_treash):
     F_dist_arr = Primer_Dist_scanner(ContigSeq,Primer_F,degenerate_dict)
     R_dist_arr = Primer_Dist_scanner(ContigSeq,Primer_R_tr,degenerate_dict)
     res_lst = []
     punish_arr = np.array([])
-    for F in np.argwhere(F_dist_arr <= F_treash).squeeze(axis = 1):
-        for R in np.argwhere(R_dist_arr <= R_treash).squeeze(axis = 1):
+    for F in np.argwhere(F_dist_arr <= f_treash).squeeze(axis = 1):
+        for R in np.argwhere(R_dist_arr <= r_treash).squeeze(axis = 1):
             res_seq = ContigSeq[F:R+len(Primer_R_tr)+1]
             if (len(res_seq) <= insert_size_max):
                 if (len(res_seq) >= insert_size_min):
@@ -61,12 +61,12 @@ def PrimerModeGeneration(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_
     read_len = int(cfg_dict['read_len'])
     error_rate = float(cfg_dict['error_rate'])
     size_punish = float(cfg_dict['size_punish'])
-    F_treash = float(cfg_dict['F_treash'])
-    R_treash = float(cfg_dict['R_treash'])
+    f_treash = float(cfg_dict['f_treash'])
+    r_treash = float(cfg_dict['r_treash'])
 
     punish_arr, res_lst = extract_amplicon(ContigSeq,Primer_F,Primer_R_tr,degenerate_dict,
                                             insert_size,insert_size_max,insert_size_min,
-                                            size_punish,F_treash,R_treash)
+                                            size_punish,f_treash,r_treash)
     # TODO: prob_arr = 1 / punish_arr
     if len(res_lst)>0:
         counter = 1
@@ -80,7 +80,7 @@ def PrimerModeGeneration(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_
 
 def RandomModeGeneration(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_w,r2_w):
     insert_size = int(cfg_dict['insert_size'])
-    total_reads = int(sample_dict['reads'])  ## TODO:fix
+    total_reads = int(sample_dict['frags'])  ## TODO:fix    
     read_len = int(cfg_dict['read_len'])
     error_rate = float(cfg_dict['error_rate'])
     if len(ContigSeq)<=insert_size:
