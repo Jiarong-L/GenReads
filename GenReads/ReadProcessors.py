@@ -45,7 +45,7 @@ def Seq2Read(fragment,read_len,error_rate):
     r2_q = Gen_Quality_line(r2)
     return r1,r1_q,r2,r2_q
 
-def SaveSeq2Read(fragment,read_len,error_rate,header,fa_w,r1_w,r2_w):   # TODO: check if frag is valid
+def SaveSeq2Read(fragment,read_len,error_rate,header,fa_w,r1_w,r2_w):   # TODO: check if frag is valid & r1r2<frag
     r1,r1_q,r2,r2_q = Seq2Read(fragment,read_len,error_rate)
     fa_w.write_fa(header,fragment)
     r1_w.write_fq(header,r1,r1_q)

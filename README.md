@@ -15,11 +15,13 @@ Generate Fake Reads
    |--read_len--|
    |---------------insert_size--------------------|  常规定义为不包含primer的长度，但此Tool为了偷懒设定为包含primer
 ```
-
+[常规定义参考](https://zhuanlan.zhihu.com/p/41782202)
 
 ## cfg.ini说明
 
-！！！未免造成误解，下方 ```insert_size``` 实际上是 ```insert_size_with_Primer```（Primer设定）或者```Fragment Length```（Random设定）
+！！！未免造成误解，下方 ```insert_size``` 实际上是 ```insert_size_with_Primer```（Primer设定）或者```Fragment Length```（Random设定）；返回的fragments实际上去除了Primer，所以会比设定长度短（设定时应加上两侧Primer长度）；reads则是基于去除primer序列后的Fragment生成的。
+
+另外，如果 ```read_len``` 大于获取到的Fragment，不会报错，而是生成完全重叠、比设定短的reads。
 
 ```
 [common]
