@@ -37,7 +37,7 @@ def extract_amplicon(ContigSeq,Primer_F,Primer_R_tr,degenerate_dict,insert_size,
     punish_arr = np.array([])
     for F in np.argwhere(F_dist_arr <= f_treash).squeeze(axis = 1):
         for R in np.argwhere(R_dist_arr <= r_treash).squeeze(axis = 1):
-            res_seq = ContigSeq[F:R+len(Primer_R_tr)+1]
+            res_seq = ContigSeq[F:R+len(Primer_R_tr)]    ## TODO check again +1？
             if (len(res_seq) <= insert_size_max):
                 if (len(res_seq) >= insert_size_min):
                     res_lst.append(res_seq)
@@ -46,8 +46,35 @@ def extract_amplicon(ContigSeq,Primer_F,Primer_R_tr,degenerate_dict,insert_size,
     return punish_arr,res_lst
 
 
-def AnchorModeGeneration():  ## TODO: anchor pcr   single primer?
-    pass
+def extract_anchorFrag(ContigSeq,Primer_F,degenerate_dict,insert_size,size_punish,f_treash):
+    F_dist_arr = Primer_Dist_scanner(ContigSeq,Primer_F,degenerate_dict)
+    res_lst = []
+    punish_arr = np.array([])
+    for F in np.argwhere(F_dist_arr <= f_treash).squeeze(axis = 1):
+        res_seq = ContigSeq[F:F+insert_size]    
+        res_lst.append(res_seq)
+        punish = F_dist_arr[F] + abs(len(res_seq)-insert_size)*size_punish
+        punish_arr = np.append(punish_arr, punish)
+    return punish_arr,res_lst
+
+
+def AnchorModeGeneration(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_w,r2_w): 
+    Primer_F = Primers().Get_Primer(cfg_dict['forward'])
+    insert_size = int(cfg_dict['insert_size'])
+    read_len = int(cfg_dict['read_len'])
+    error_rate = float(cfg_dict['error_rate'])
+    size_punish = float(cfg_dict['size_punish'])
+    f_treash = float(cfg_dict['f_treash'])
+
+    punish_arr, res_lst = extract_anchorFrag(ContigSeq,Primer_F,degenerate_dict,insert_size,size_punish,f_treash)    # TODO: prob_arr = 1 / punish_arr
+
+    if len(res_lst)>0:
+        counter = 1
+        for idx in np.argwhere(punish_arr <= min(punish_arr)).squeeze(axis=1):  # Select the most possible result
+            header = '{}__{} {}'.format(H_prefix,counter,H_info)
+            counter += 1
+            best_frag = res_lst[idx][len(Primer_F):]           # drop primer seq TODO:fix it if primer's match len not constant
+            SaveSeq2Read(best_frag,read_len,error_rate,header,fa_w,r1_w,r2_w)
 
 
 
@@ -73,7 +100,7 @@ def PrimerModeGeneration(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_
         for idx in np.argwhere(punish_arr <= min(punish_arr)).squeeze(axis=1):  # Select the most possible result
             header = '{}__{} {}'.format(H_prefix,counter,H_info)
             counter += 1
-            best_frag = res_lst[idx][len(Primer_F):-len(Primer_R_tr)]           # drop primer seq TODO:fix it
+            best_frag = res_lst[idx][len(Primer_F):-len(Primer_R_tr)]           # drop primer seq TODO:fix it if primer's match len not constant
             SaveSeq2Read(best_frag,read_len,error_rate,header,fa_w,r1_w,r2_w)
 
 
@@ -106,7 +133,7 @@ def CallGenerators(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_w,r2_w
         if 'reverse' in cfg_dict:
             return PrimerModeGeneration(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_w,r2_w)
         else:
-            return AnchorModeGeneration()  ## TODO
+            return AnchorModeGeneration(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_w,r2_w)
     else:
         return RandomModeGeneration(ContigSeq,cfg_dict,sample_dict,H_prefix,H_info,fa_w,r1_w,r2_w)
 

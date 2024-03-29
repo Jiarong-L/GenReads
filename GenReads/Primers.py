@@ -18,7 +18,7 @@ class Primers(object):
         self.primer_dict['1492R'] = 'AGAGTTTGATCMTGGCTCAG'
     def Get_Primer(self,primer):# http://journals.im.ac.cn/html/actamicrocn/2021/5/20210502.htm
         if primer not in self.primer_dict:    
-            if self.Check_Valid(self,primer):
+            if self.Check_Valid(primer):
                 self.primer_dict[primer] = primer
         return self.primer_dict[primer]
     def Check_Valid(self,primer): # Todo: check if primer is a valid seq

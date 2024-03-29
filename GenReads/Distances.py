@@ -5,12 +5,6 @@ import numpy as np
 degenerate_dict = Gen_degenerate_dict()
 
 
-def blast():  ## TODO
-    pass
-
-
-
-
 
 def bio_hamming(seq1,seq2,degenerate_dict,allow_unequal_tail = True):  
     max_seq_len = max(len(seq1),len(seq2))
@@ -55,6 +49,7 @@ def bio_Levenshtein_dynamic(seq1,seq2,degenerate_dict,insert_cost = 1,delet_cost
     return int(dp[i][j])
 
 
+## dist_arr[k] means dist value for str = ContigSeq[k:len]
 def Primer_Dist_scanner(ContigSeq,Primer,degenerate_dict): #,fill_marker,treashhold = 2
     contig_len = len(ContigSeq)
     Primer_len = len(Primer)
